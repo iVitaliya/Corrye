@@ -1,6 +1,7 @@
 /**
  * Verify if a number is a finite number.
+ * @since 0.1.1
  * @param input The number to verify. */
-export function isNumber(input: unknown): input is Number {
-	// https://github.com/dirigeants/utils/blob/77d5e766399f2e9c75d2b5c7c32d1032aaf75a94/src/lib/isNumber.ts#L6
+export function isNumber(input: unknown): input is number {
+  return typeof input === "number" && !isNaN(input) && Number.isFinite(input);
 }
