@@ -1,5 +1,8 @@
 {
-    "deno.enable": true,
-    "prettier.enable": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+	"deno.enable": true,
+	"typescript.format.enable": true,
+	"editor.formatOnSave": true,
+	"editor.formatOnSaveMode": "file",
+	"editor.showUnused": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode"
 }
