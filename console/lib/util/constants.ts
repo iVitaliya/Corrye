@@ -1,25 +1,70 @@
 import { mergeDefault } from "../../../utils/mod.ts";
 
-import type { ConsoleOptions, ConsoleOptionsColor } from '../KlasaConsole';
+import type { ConsoleOptions, ConsoleOptionsColor } from "../CorryeConsole.ts";
 
 const colorBase: ConsoleOptionsColor = {
-	shard: { background: "cyan", text: "black" },
-	message: {},
-	time: {}
+  shard: { background: "cyan", text: "black" },
+  message: { style: "normal", text: "white" },
+  time: {},
 };
 
 export const ConsoleDefaults: Partial<ConsoleOptions> = {
-	stdout: process.stdout,
-	stderr: process.stderr,
-	timestamps: true,
-	utc: false,
-	colors: {
-		debug: mergeDefault(colorBase, { time: { background: 'magenta' } }),
-		error: mergeDefault(colorBase, { time: { background: 'red' } }),
-		log: mergeDefault(colorBase, { time: { background: 'blue' } }),
-		verbose: mergeDefault(colorBase, { time: { text: 'gray' } }),
-		warn: mergeDefault(colorBase, { time: { background: 'lightyellow', text: 'black' } }),
-		wtf: mergeDefault(colorBase, { message: { text: 'red' }, time: { background: 'red' } })
-	}
+  stdout: Deno.stdout,
+  stderr: Deno.stderr,
+  timestamps: true,
+  utc: false,
+  colors: {
+    log: mergeDefault(colorBase, {
+      time: {
+        background: "magenta",
+        text: "black",
+      },
+    }),
+    info: mergeDefault(colorBase, {
+      time: {
+        background: "cyan",
+        text: "black",
+      },
+    }),
+    warn: mergeDefault(colorBase, {
+      time: {
+        background: "lightyellow",
+        text: "black",
+      },
+    }),
+    debug: mergeDefault(colorBase, {
+      time: {
+        background: "green",
+        text: "black",
+      },
+    }),
+    error: mergeDefault(colorBase, {
+      time: {
+        background: "red",
+        text: "black",
+      },
+    }),
+    wtf: mergeDefault(colorBase, {
+      time: {
+        background: "red",
+        text: "black",
+      },
+    }),
+    verbose: mergeDefault(colorBase, {
+      time: {
+        background: "lightgray",
+        text: "black",
+      },
+    }),
+  },
 };
 
+export const ConsoleTypes = {
+  log: "log",
+  info: "info",
+  debug: "debug",
+  warn: "warn",
+  error: "error",
+  wtf: "error",
+  verbose: "log",
+};
