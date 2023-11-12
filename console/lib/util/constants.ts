@@ -1,3 +1,4 @@
+import proc from "node:process";
 import { mergeDefault } from "../../../utils/mod.ts";
 
 import type { ConsoleOptions, ConsoleOptionsColor } from "../CorryeConsole.ts";
@@ -9,8 +10,8 @@ const colorBase: ConsoleOptionsColor = {
 };
 
 export const ConsoleDefaults: Partial<ConsoleOptions> = {
-  stdout: Deno.stdout,
-  stderr: Deno.stderr,
+  stdout: proc.stdout,
+  stderr: proc.stderr,
   timestamps: true,
   utc: false,
   colors: {

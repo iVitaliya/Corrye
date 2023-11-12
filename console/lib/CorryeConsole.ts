@@ -1,16 +1,8 @@
 import { Timestamp, Utils } from "../../mod.ts";
-import { Console } from "../../dependencies.ts";
-import type { LoggerOptions } from "../../dependencies.ts";
+import { Console } from "node:console";
 import { Colors, ColorsFormatOptions } from "./Colors.ts";
 import { ConsoleDefaults, ConsoleTypes } from "./util/constants.ts";
-
-/**
- * The writeble type for the several interfaces.
- * @since 0.1.1 */
-export type WriteStream = Deno.Writer & Deno.WriterSync & Deno.Closer & {
-  readonly rid: number;
-  readonly writable: WritableStream<Uint8Array>;
-};
+import { inspect } from "node:util";
 
 /**
  * The options for Corrye console.
@@ -24,12 +16,12 @@ export interface ConsoleOptions {
   /**
    * The WritableStream for the output logs.
    * @since 0.1.1 */
-  stdout: WriteStream;
+  stdout: NodeJS.WriteStream;
 
   /**
    * The WritableStream for the error logs.
    * @since 0.1.1 */
-  stderr: WriteStream;
+  stderr: NodeJS.WriteStream;
 
   /**
    * If false, it won't use timestamps. Otherwise it will use 'YYYY-MM-DD HH:mm:ss' if true or custom if string is given.
@@ -141,35 +133,25 @@ export class CorryeConsole extends Console {
   /**
    * The standard output stream for this console, defaulted to process.stderr.
    * @since 0.1.1 */
-  private stdout!: WriteStream;
+  private stdout!: NodeJS.WriteStream;
 
   /**
    * @since 0.1.1
    * @param options The options for the console. */
-  public constructor(
-    options: Partial<ConsoleOptions> = {},
-    additional_options: {
-      loggerName: string;
-      levelName: "NOTSET" | "DEBUG" | "INFO" | "WARNING" | "ERROR" | "CRITICAL";
-      additional?: LoggerOptions;
-    },
-  ) {
+  public constructor(options: Partial<ConsoleOptions> = {}) {
     const castedOptions = Utils.mergeDefault(
       ConsoleDefaults,
       options,
     ) as Required<
       ConsoleOptions
     >;
-    super(
-      additional_options.loggerName,
-      additional_options.levelName,
-      additional_options.additional,
-    );
+    super(castedOptions.stdout, castedOptions.stderr);
 
     Object.defineProperty(this, "stdout", { value: castedOptions.stdout });
     Object.defineProperty(this, "stderr", { value: castedOptions.stderr });
 
-    Colors["useColors"] = castedOptions.useColor ?? (Deno.isatty || false);
+    Colors["useColors"] = castedOptions.useColor ??
+      (this.stdout.isTTY || false);
 
     this.template = castedOptions.timestamps !== false
       ? new Timestamp.Timestamp(
@@ -291,13 +273,14 @@ export class CorryeConsole extends Console {
     if (typeof data === "string") return data;
     if (typeof data === "object") {
       const isArray = Array.isArray(data);
+
       if (isArray && (data as []).every((datum) => typeof datum === "string")) {
         return (data as string[]).join("\n");
       }
 
       // eslint-disable-next-line dot-notation
       return (data as Error).stack || (data as Error).message ||
-        Deno.inspect(data, {
+        inspect(data, {
           depth: Number(isArray),
           colors: Colors["useColors"],
         });
