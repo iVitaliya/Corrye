@@ -1,5 +1,4 @@
-import { Timestamp } from "../../timestamp/mod.ts";
-import { mergeDefault } from "../../utils/mod.ts";
+import { mergeDefault, Timestamp } from "../../mod.ts";
 import { Console } from "../../dependencies.ts";
 import type { LoggerOptions } from "../../dependencies.ts";
 import { Colors, ColorsFormatOptions } from "./Colors.ts";

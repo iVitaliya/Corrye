@@ -1,2 +1,4 @@
-export * as utils from "./utils/mod.ts";
-export * as console from "./console/mod.ts";
+export * from "./cache/mod.ts";
+export * from "./console/mod.ts";
+export * from "./timestamp/mod.ts";
+export * from "./utils/mod.ts";
