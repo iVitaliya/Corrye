@@ -1,4 +1,4 @@
-import { mergeDefault, Timestamp } from "../../mod.ts";
+import { Timestamp, Utils } from "../../mod.ts";
 import { Console } from "../../dependencies.ts";
 import type { LoggerOptions } from "../../dependencies.ts";
 import { Colors, ColorsFormatOptions } from "./Colors.ts";
@@ -126,7 +126,7 @@ export class CorryeConsole extends Console {
   /**
    * Whether or not timestamps should be enabled for this console.
    * @since 0.1.1 */
-  public template: Timestamp | null;
+  public template: Timestamp.Timestamp | null;
 
   /**
    * The colors for this console.
@@ -154,7 +154,10 @@ export class CorryeConsole extends Console {
       additional?: LoggerOptions;
     },
   ) {
-    const castedOptions = mergeDefault(ConsoleDefaults, options) as Required<
+    const castedOptions = Utils.mergeDefault(
+      ConsoleDefaults,
+      options,
+    ) as Required<
       ConsoleOptions
     >;
     super(
@@ -169,7 +172,7 @@ export class CorryeConsole extends Console {
     Colors["useColors"] = castedOptions.useColor ?? (Deno.isatty || false);
 
     this.template = castedOptions.timestamps !== false
-      ? new Timestamp(
+      ? new Timestamp.Timestamp(
         castedOptions.timestamps === true
           ? "YYYY-MM-DD HH:mm:ss"
           : castedOptions.timestamps,
