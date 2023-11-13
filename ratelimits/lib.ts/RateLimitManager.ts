@@ -19,7 +19,7 @@ export class RateLimitManager<K = string> extends Cache<K, RateLimit<K>> {
   /**
    * The interval to sweep expired {@link RateLimit ratelimit}s.
    * @since 0.1.1 */
-  #sweepInterval!: NodeJS.Timer | null;
+  #sweepInterval!: number | null;
 
   /**
    * @param time The amount of milliseconds for the {@link RateLimit ratelimit}s from this manager to expire.
@@ -84,7 +84,7 @@ export class RateLimitManager<K = string> extends Cache<K, RateLimit<K>> {
 
     if (this.size === 0) {
       TimerManager.clearInterval(
-        this.#sweepInterval as NodeJS.Timer,
+        this.#sweepInterval as number,
       );
       this.#sweepInterval = null;
     }
