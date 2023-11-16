@@ -3,6 +3,7 @@
   "packages": {
     "specifiers": {
       "npm:@types/node": "npm:@types/node@18.16.19",
+      "npm:events": "npm:events@3.3.0",
       "npm:util": "npm:util@0.12.5",
       "npm:utils": "npm:utils@0.3.1"
     },
@@ -85,6 +86,10 @@
           "gopd": "gopd@1.0.1",
           "has-property-descriptors": "has-property-descriptors@1.0.1"
         }
+      },
+      "events@3.3.0": {
+        "integrity": "sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==",
+        "dependencies": {}
       },
       "export-dirs@0.2.4": {
         "integrity": "sha512-fBQ2iiw2FPxyzsOOVpWICXUNbuSBanxYYyDy1gaF4Gpfp7UkiuPA6N57Daqf7FpFDyT3g1+L+Rz4tr4aRj9SRw==",

@@ -30,5 +30,151 @@ export class Cron {
       ._parseString(this.normalized);
   }
 
-  // https://github.com/dirigeants/cron/blob/e68adcee3252640ce7714d53cc099b5ce0ce9d1e/src/index.ts#L27C5-L29C51
+  /**
+   * Get the next date that macthes with the current pattern.
+   * @param outset The `Date` instance to compare with.
+   * @param origin Whether this next call is the origin. */
+  public next(outset: Date = new Date(), origin = true): Date {
+    if (
+      !this.days.includes(outset.getUTCDate()) ||
+      !this.months.includes(outset.getUTCMonth() + 1) ||
+      !this.dows.includes(outset.getUTCDay())
+    ) {
+      return this.next(new Date(outset.getTime() + DAY), false);
+    }
+
+    if (!origin) {
+      return new Date(
+        Date.UTC(
+          outset.getUTCFullYear(),
+          outset.getUTCMonth(),
+          outset.getUTCDate(),
+          this.hours[0],
+          this.minutes[0],
+        ),
+      );
+    }
+
+    const now = new Date(outset.getTime() + 60000);
+
+    for (const hour of this.hours) {
+      if (hour < now.getUTCHours()) continue;
+      for (const minute of this.minutes) {
+        if (hour === now.getUTCHours() && minute < now.getUTCMinutes()) {
+          continue;
+        }
+        return new Date(
+          Date.UTC(
+            outset.getUTCFullYear(),
+            outset.getUTCMonth(),
+            outset.getUTCDate(),
+            hour,
+            minute,
+          ),
+        );
+      }
+    }
+
+    return this.next(new Date(outset.getTime() + DAY), false);
+  }
+
+  /**
+   * Normalize the pattern.
+   * @param cron The pattern to normalize. */
+  private static _normalize(cron: string): string {
+    if (cron in predefined) return predefined[cron];
+
+    const now = new Date();
+
+    cron = cron.split(" ").map((value, index) =>
+      value.replace(wildcardRegex, (match) => {
+        if (match === "h") {
+          return (Math.floor(Math.random() * allowedNum[index][1]) +
+            allowedNum[index][0]).toString();
+        }
+
+        /* istanbul ignore else: unreachable code. */
+        if (match === "?") {
+          switch (index) {
+            case 0:
+              return now.getUTCMinutes().toString();
+            case 1:
+              return now.getUTCHours().toString();
+            case 2:
+              return now.getUTCDate().toString();
+            case 3:
+              return now.getUTCMonth().toString();
+            case 4:
+              return now.getUTCDay().toString();
+          }
+        }
+
+        /* istanbul ignore next: unreachable code. */
+        return match;
+      })
+    ).join(" ");
+
+    return cron.replace(tokensRegex, (match) => String(tokens[match]));
+  }
+
+  /**
+   * Parse the pattern.
+   * @param cron The pattern to parse. */
+  private static _parseString(cron: string): Array<number[]> {
+    const parts = cron.split(" ");
+
+    if (parts.length !== 5) throw new Error("Invalid Cron Provided");
+
+    return parts.map(Cron._parsePart);
+  }
+
+  /**
+   * Parse the current part.
+   * @param cronPart The part of the pattern to parse.
+   * @param id The id that identifies the current part. */
+  private static _parsePart(cronPart: string, id: number): number[] {
+    if (cronPart.includes(",")) {
+      const res = [];
+
+      for (const part of cronPart.split(",")) {
+        res.push(...Cron._parsePart(part, id));
+      }
+
+      return [...new Set(res)].sort((a, b) => a - b);
+    }
+
+    const [, wild, minStr, maxStr, step] = partRegex.exec(
+      cronPart,
+    ) as RegExpExecArray;
+    let [min, max] = [parseInt(minStr), parseInt(maxStr)];
+
+    // If '*', set min and max as the minimum and maximum allowed numbers:
+    if (wild) [min, max] = allowedNum[id];
+    // Else if a number was given, but not a maximum nor a step, return it
+    // as only allowed value:
+    else if (!max && !step) return [min];
+
+    // Set min and max as the given numbers, defaulting max to the maximum
+    // allowed, so min is never bigger than max:
+    // This makes min and max be, in the following cases (considering minutes):
+    // -> 1-2 | 1..2
+    // -> 2-1 | 1..2
+    // -> 1/7 | 1, 8, 15, 22, 29, 36, 43, 50, 57
+    [min, max] = [min, max || allowedNum[id][1]].sort((a, b) => a - b);
+
+    // Generate a range
+    return Cron._range(min, max, parseInt(step) || 1);
+  }
+
+  /**
+   * Get an array of numbers with the selected range.
+   * @param min The minimum value.
+   * @param max The maximum value.
+   * @param step The step value. */
+  private static _range(min: number, max: number, step: number): number[] {
+    return new Array(Math.floor((max - min) / step) + 1).fill(0).map((
+      _val,
+      i,
+    ) => min + (i * step));
+  }
 }
