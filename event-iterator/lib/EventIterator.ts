@@ -181,8 +181,8 @@ export class EventIterator<T> {
         // This timer is to idle out on lack of any responses
         idleTimer = TimerManager.TimerManager.setTimeout(() => {
           this.end();
-          
-		  resolve(this.next());
+
+          resolve(this.next());
         }, __classPrivateFieldGet(this, this._idle));
       }
 
