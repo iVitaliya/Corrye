@@ -1,8 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
-import * as AppCmds from "./sub-types/applicationCommands.ts";
+import {
+  APIActivityButtons,
+  APIActivityDataAssets,
+  APIActivityDataEmoji,
+  APIActivityDataParty,
+  APIActivityDataSecrets,
+  APIActivityDataTimestamp,
+} from "./sub-lib/Activity.ts";
+import { APIApplicationCommandOptionData } from "./sub-lib/ApplicationCommands.ts";
+import { APIAuditLogEntryData } from "./sub-lib/AuditLog.ts";
+import {
+  APIAutoModerationRuleActionData,
+  APIAutoModerationRuleMetadataData,
+} from "./sub-lib/AutoModeration.ts";
 
-type Snowflake = bigint | string;
-type Lang = { name: string; description: string };
+export type Snowflake = bigint | string;
 
 /** https://discord.com/developers/docs/topics/gateway-events#activity-object */
 export interface APIActivityData {
@@ -23,51 +35,11 @@ export interface APIActivityData {
   buttons?: APIActivityButtons[];
 }
 
-/** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-timestamps */
-export interface APIActivityDataTimestamp {
-  start?: number;
-  end?: number;
-}
-
-/** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-emoji */
-export interface APIActivityDataEmoji {
-  name: string;
-  id?: Snowflake;
-  animated?: boolean;
-}
-
-/** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-party */
-export interface APIActivityDataParty {
-  id?: string;
-  size?: [number, number];
-}
-
-/** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-assets */
-export interface APIActivityDataAssets {
-  large_image?: string;
-  large_text?: string;
-  small_image?: string;
-  small_text?: string;
-}
-
-/** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-secrets */
-export interface APIActivityDataSecrets {
-  join?: string;
-  spectate?: string;
-  match?: string;
-}
-
-/** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-buttons */
-export interface APIActivityButtons {
-  label: string;
-  url: string;
-}
-
 /** https://discord.com/developers/docs/resources/audit-log#audit-log-object */
 export interface APIAuditLogData {
-  application_commands: APIApplicationCommand[];
+  application_commands: APIApplicationCommandData[];
   audit_log_entries: APIAuditLogEntryData[];
-  auto_moderation_rules: APIAutoModerationRule[];
+  auto_moderation_rules: APIAutoModerationRuleData[];
   webhooks: APIWebhookData[];
   users: APIUserData[];
 
@@ -75,16 +47,16 @@ export interface APIAuditLogData {
 }
 
 /** https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure */
-export interface APIApplicationCommand {
+export interface APIApplicationCommandData {
   id: Snowflake;
-  type?: APIApplicationCommandType;
+  type?: APIApplicationCommandDataType;
   application_id: Snowflake;
   guild_id?: Snowflake;
   name: string;
   name_localization: LocalesType | null;
   description: string;
   description_localizations?: LocalesType | null;
-  options?: APIApplicationCommandOption[];
+  options?: APIApplicationCommandOptionData[];
   default_member_permissions: string | null;
   dm_permission?: boolean;
   default_permission?: boolean | null;
@@ -92,63 +64,21 @@ export interface APIApplicationCommand {
   version: Snowflake;
 }
 
-/** https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure */
-export interface APIApplicationCommandOption {
-  type: APIApplicationCommandOptionType;
-  name: string;
-  name_localizations?: LocalesType | null;
-  description: string;
-  description_localizations?: LocalesType | null;
-  required?: boolean;
-  choices?: APIApplicationCommandOptionChoice[];
-  options?: APIApplicationCommandOption[];
-  channel_type?: APIChannelType[];
-  min_value?: number;
-  max_value?: number;
-  min_length?: number;
-  max_length?: number;
-  /**
-   * If autocomplete interactions are enabled for this `STRING`, `INTEGER`, or `NUMBER` type option
-   * - `autocomplete` may not be set to true if `choices` are present. */
-  autocomplete?: boolean;
-}
-
-/** https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-choice-structure */
-export interface APIApplicationCommandOptionChoice {
-  name: string;
-  name_localizations?: LocalesType;
-  /** Value for the choice, up to 100 characters if string */
-  value: string | number;
-}
-
-/** https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object */
-export interface APIAuditLogEntryData {
-  target_id: string | null;
-  changes?: APIAuditLogChangeData[];
-  user_id: Snowflake | null;
+/** https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object */
+export interface APIAutoModerationRuleData {
   id: Snowflake;
-  action_type: AuditLogEvent;
-  options?: APIAuditLogOptionsData;
-  reason?: string;
-}
-
-/** https://discord.com/developers/docs/resources/audit-log#audit-log-change-object-audit-log-change-structure */
-export interface APIAuditLogChangeData {
-  new_value?: any;
-  old_value?: any;
-  key: string;
-}
-
-/** https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-optional-audit-entry-info */
-export interface APIAuditLogOptionsData {
-  delete_member_days?: string;
-  members_removed?: string;
-  channel_id?: string;
-  message_id?: string;
-  count?: string;
-  id?: string;
-  type?: "member" | "role";
-  role_name?: string;
+  guild_id: Snowflake;
+  name: string;
+  creator_id: Snowflake;
+  /** Use the enum: {@link APIAutoModerationRuleEvent} */
+  event_type: number;
+  /** Use the enum: {@link APIAutoModerationRuleTrigger} */
+  trigger_type: number;
+  trigger_metadata: APIAutoModerationRuleMetadataData;
+  actions: APIAutoModerationRuleActionData[];
+  enabled: boolean;
+  exempt_roles: Snowflake[];
+  exempt_channels: Snowflake[];
 }
 
 /** https://discord.com/developers/docs/resources/guild#ban-object-ban-structure */
@@ -160,7 +90,7 @@ export interface APIBanData {
 /** Not Documented, but partial only includes id, name, and type. */
 export interface APIChannelPartial {
   id: string;
-  type: ChannelType;
+  type: APIChannelType;
   name?: string;
 }
 
@@ -379,14 +309,14 @@ export declare const enum ActivityFlags {
 }
 
 /** https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types */
-export declare const enum APIApplicationCommandType {
+export declare const enum APIApplicationCommandDataType {
   CHAT_INPUT = 1,
   USER = 2,
   MESSAGE = 3,
 }
 
 /** https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type */
-export declare const enum APIApplicationCommandOptionType {
+export declare const enum APIApplicationCommandDataOptionType {
   SUB_COMMAND = 1,
   SUB_COMMAND_GROUP = 2,
   STRING = 3,
@@ -401,6 +331,92 @@ export declare const enum APIApplicationCommandOptionType {
   MENTIONABLE = 9,
   NUMBER = 10,
   ATTACHMENT = 11,
+}
+
+/** https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events */
+export declare const enum APIAuditLogEvent {
+  GUILD_UPDATE = 1,
+  CHANNEL_CREATE = 10,
+  CHANNEL_UPDATE = 11,
+  CHANNEL_DELETE = 12,
+  CHANNEL_OVERWRITE_CREATE = 13,
+  CHANNEL_OVERWRITE_UPDATE = 14,
+  CHANNEL_OVERWRITE_DELETE = 15,
+  MEMBER_KICK = 20,
+  MEMBER_PRUNE = 21,
+  MEMBER_BAN_ADD = 22,
+  MEMBER_BAN_REMOVE = 23,
+  MEMBER_UPDATE = 24,
+  MEMBER_ROLE_UPDATE = 25,
+  MEMBER_MOVE = 26,
+  MEMBER_DISCONNECT = 27,
+  BOT_ADD = 28,
+  ROLE_CREATE = 30,
+  ROLE_UPDATE = 31,
+  ROLE_DELETE = 32,
+  INVITE_CREATE = 40,
+  INVITE_UPDATE = 41,
+  INVITE_DELETE = 42,
+  WEBHOOK_CREATE = 50,
+  WEBHOOK_UPDATE = 51,
+  WEBHOOK_DELETE = 52,
+  EMOJI_CREATE = 60,
+  EMOJI_UPDATE = 61,
+  EMOJI_DELETE = 62,
+  MESSAGE_DELETE = 72,
+  MESSAGE_BULK_DELETE = 73,
+  MESSAGE_PIN = 74,
+  MESSAGE_UNPIN = 75,
+  INTEGRATION_CREATE = 80,
+  INTEGRATION_UPDATE = 81,
+  INTEGRATION_DELETE = 82,
+  STAGE_INSTANCE_CREATE = 83,
+  STAGE_INSTANCE_UPDATE = 84,
+  STAGE_INSTANCE_DELETE = 85,
+  STICKER_CREATE = 90,
+  STICKER_UPDATE = 91,
+  STICKER_DELETE = 92,
+  GUILD_SCHEDULED_EVENT_CREATE = 100,
+  GUILD_SCHEDULED_EVENT_UPDATE = 101,
+  GUILD_SCHEDULED_EVENT_DELETE = 102,
+  THREAD_CREATE = 110,
+  THREAD_UPDATE = 111,
+  THREAD_DELETE = 112,
+  APPLICATION_COMMAND_PERMISSION_UPDATE = 121,
+  AUTO_MODERATION_RULE_CREATE = 140,
+  AUTO_MODERATION_RULE_UPDATE = 141,
+  AUTO_MODERATION_RULE_DELETE = 142,
+  AUTO_MODERATION_BLOCK_MESSAGE = 143,
+  AUTO_MODERATION_FLAG_TO_CHANNEL = 144,
+  AUTO_MODERATION_USER_COMMUNICATION_DISABLED = 145,
+  CREATOR_MONETIZATION_REQUEST_CREATED = 150,
+  CREATOR_MONETIZATION_TERMS_ACCEPTED = 151,
+}
+
+/** https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-event-types */
+export declare const enum APIAutoModerationRuleEvent {
+  MESSAGE_SEND = 1,
+}
+
+/** https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-types */
+export declare const enum APIAutoModerationRuleTrigger {
+  KEYWORD = 1,
+  SPAM = 3,
+  KEYWORD_PRESET = 4,
+  MENTION_SPAM = 5,
+}
+
+/** https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-keyword-preset-types */
+export declare const enum APIAutoModerationRuleKeywordPreset {
+  PROFANITY = 1,
+  SEXUAL_CONTENT = 2,
+  SLURS = 3,
+}
+
+export declare const enum APIAutoModerationRuleActionType {
+  BLOCK_MESSAGE = 1,
+  SEND_ALERT_MESSAGE = 2,
+  TIMEOUT = 3,
 }
 
 /** https://discord.com/developers/docs/resources/channel#channel-object-channel-types */
