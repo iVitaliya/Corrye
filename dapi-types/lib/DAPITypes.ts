@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
 import {
   APIActivityButtons,
   APIActivityDataAssets,
@@ -13,8 +12,19 @@ import {
   APIAutoModerationRuleActionData,
   APIAutoModerationRuleMetadataData,
 } from "./sub-lib/AutoModeration.ts";
+import { APIGuildScheduledEventEntityMetadataData } from "./sub-lib/GuildScheduledEvents.ts";
 
 export type Snowflake = bigint | string;
+type Timestamp = string | number | bigint | RegExp | typeof RegExp;
+
+/** https://discord.com/developers/docs/resources/user#user-object-user-structure */
+export interface APIUserData {
+  id: Snowflake;
+  username: string;
+  discriminator?: string | null;
+  global_name: string | null | undefined;
+  avatar: string | null | undefined;
+}
 
 /** https://discord.com/developers/docs/topics/gateway-events#activity-object */
 export interface APIActivityData {
@@ -40,10 +50,8 @@ export interface APIAuditLogData {
   application_commands: APIApplicationCommandData[];
   audit_log_entries: APIAuditLogEntryData[];
   auto_moderation_rules: APIAutoModerationRuleData[];
-  webhooks: APIWebhookData[];
-  users: APIUserData[];
-
-  integrations: Partial<APIIntegrationData>[];
+  guild_scheldud_events: APIGuildScheduledEventsData[];
+  integrations: APIIntegrationData[];
 }
 
 /** https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure */
@@ -79,6 +87,45 @@ export interface APIAutoModerationRuleData {
   enabled: boolean;
   exempt_roles: Snowflake[];
   exempt_channels: Snowflake[];
+}
+
+/** https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object */
+export interface APIGuildScheduledEventsData {
+  id: Snowflake;
+  guild_id: Snowflake;
+  channel_id: Snowflake | null;
+  creator_id?: Snowflake | null;
+  name: string;
+  description?: string | null;
+  scheduled_start_time: Timestamp;
+  /** **required** if entity_type is `EXTERNAL` */
+  scheduled_end_time: Timestamp | null;
+  privacy_level: APIGuildScheduledEventPrivacyLevel;
+  status: APIGuildScheduledEventStatus;
+  entity_type: APIGuildScheduledEventEntityType;
+  entity_id: Snowflake | null;
+  entity_metadata: APIGuildScheduledEventEntityMetadataData | null;
+  creator?: APIUserData;
+  user_count?: number;
+  image?: string | null;
+}
+
+/** https://discord.com/developers/docs/resources/guild#integration-object */
+export interface APIIntegrationData {
+  id: Snowflake;
+  name: string;
+  type: string;
+  enabled: boolean;
+  /** **not provided for discord bot integrations** */
+  syncing?: boolean;
+  /** **not provided for discord bot integrations** */
+  role_id?: Snowflake;
+  /** **not provided for discord bot integrations** */
+  enable_emoticons?: boolean;
+  /** **not provided for discord bot integrations** */
+  expire_behavior?: APIIntegrationExpireBehavior;
+  /** **not provided for discord bot integrations** */
+  expire_grace_period?: number;
 }
 
 /** https://discord.com/developers/docs/resources/guild#ban-object-ban-structure */
@@ -413,10 +460,36 @@ export declare const enum APIAutoModerationRuleKeywordPreset {
   SLURS = 3,
 }
 
+/** https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-action-types */
 export declare const enum APIAutoModerationRuleActionType {
   BLOCK_MESSAGE = 1,
   SEND_ALERT_MESSAGE = 2,
   TIMEOUT = 3,
+}
+
+/** https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-privacy-level */
+export declare const enum APIGuildScheduledEventPrivacyLevel {
+  GUILD_ONLY = 2,
+}
+
+/** https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-status */
+export declare const enum APIGuildScheduledEventStatus {
+  SCHEDULED = 1,
+  ACTIVE = 2,
+  COMPLETED = 3,
+  CANCELED = 4,
+}
+
+/** https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-entity-types */
+export declare const enum APIGuildScheduledEventEntityType {
+  STAGE_INSTANCE = 1,
+  VOICE = 2,
+  EXTERNAL = 3,
+}
+
+export declare const enum APIIntegrationExpireBehavior {
+  REMOVE_ROLE = 0,
+  KICK = 1,
 }
 
 /** https://discord.com/developers/docs/resources/channel#channel-object-channel-types */
