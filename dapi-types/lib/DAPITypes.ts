@@ -12,6 +12,7 @@ import {
 	APIAutoModerationRuleActionData,
 	APIAutoModerationRuleMetadataData,
 } from "./sub-lib/AutoModeration.ts";
+import { APIEmbedFooterData, APIEmbedImageData } from "./sub-lib/Embed.ts";
 import { APIGuildScheduledEventEntityMetadataData } from "./sub-lib/GuildScheduledEvents.ts";
 import { APIRoleTags } from "./sub-lib/Role.ts";
 import { APIWelcomeScreenChannelData } from "./sub-lib/WelcomeChannel.ts";
@@ -409,20 +410,7 @@ export interface APIEmbedData {
 	fields?: APIEmbedFieldData[];
 }
 
-/** https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure */
-export interface APIEmbedFooterData {
-	text: string;
-	icon_url?: string;
-	proxy_icon_url?: string;
-}
 
-/** https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure */
-export interface APIEmbedImageData {
-	url?: string;
-	proxy_url?: string;
-	height?: number;
-	weight?: number;
-}
 
 /** https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure */
 export interface APIEmbedThumbnailData {
@@ -481,6 +469,7 @@ export interface APIGuildUnavailable {
 	unavailable: boolean;
 }
 
+/** https://discord.com/developers/docs/reference#locales */
 export type LocalesType =
 	| "id"
 	| "da"
@@ -841,7 +830,7 @@ export declare const enum APIStcikerFormatType {
 	GIF = 4
 }
 
-// https://discord.com/developers/docs/reference#locales
+/** https://discord.com/developers/docs/reference#locales */
 export const LocalesName: {
 	[key in LocalesType]: string;
 } = {
@@ -876,4 +865,15 @@ export const LocalesName: {
 	"vi": "Vietnamese",
 	"zh-CN": "Chinese, China",
 	"zh-TW": "Chinese, Taiwan",
+};
+
+/** https://discord.com/developers/docs/resources/channel#embed-object-embed-limits */
+export const EmbedLimits = {
+	title: 256,
+	"author.name": 256,
+	description: 4096,
+	fields: 25,
+	"fields.name": 256,
+	"fields.value": 1024,
+	"footer.text": 2048
 };
