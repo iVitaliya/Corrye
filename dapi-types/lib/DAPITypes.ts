@@ -1,3 +1,4 @@
+import { Optional, OptionalOnly } from "./ExternalTypes.ts";
 import {
 	APIActivityButtons,
 	APIActivityDataAssets,
@@ -12,7 +13,7 @@ import {
 	APIAutoModerationRuleActionData,
 	APIAutoModerationRuleMetadataData,
 } from "./sub-lib/AutoModeration.ts";
-import { APIEmbedFooterData, APIEmbedImageData } from "./sub-lib/Embed.ts";
+import { APIEmbedFooterData, APIEmbedImageData, APIEmbedProviderData, APIEmbedThumbnailData, APIEmbedVideoData } from "./sub-lib/Embed.ts";
 import { APIGuildScheduledEventEntityMetadataData } from "./sub-lib/GuildScheduledEvents.ts";
 import { APIRoleTags } from "./sub-lib/Role.ts";
 import { APIWelcomeScreenChannelData } from "./sub-lib/WelcomeChannel.ts";
@@ -395,42 +396,19 @@ export interface APIBanData {
 
 /** https://discord.com/developers/docs/resources/channel#embed-object */
 export interface APIEmbedData {
-	title?: string;
 	type?: EmbedType;
-	description?: string;
+	title?: string;
 	url?: string;
-	timestamp?: string;
-	color?: number;
-	footer?: APIEmbedFooterData;
-	image?: APIEmbedImageData;
-	thumbnail?: APIEmbedThumbnailData;
-	video?: APIEmbedVideoData;
-	provider?: APIEmbedProviderData;
+	description?: string;
+	color?: number,
+	thumbnail: Optional<APIEmbedThumbnailData, "url">;
+	image?: Optional<APIEmbedImageData, "url">;
+	video?: Optional<APIEmbedVideoData, "url">;
+	provider?: OptionalOnly<APIEmbedProviderData>;
 	author?: APIEmbedAuthorData;
 	fields?: APIEmbedFieldData[];
-}
-
-
-
-/** https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure */
-export interface APIEmbedThumbnailData {
-	url?: string;
-	proxy_url?: string;
-	height?: number;
-	weight?: number;
-}
-
-/** https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure */
-export interface APIEmbedVideoData {
-	url?: string;
-	height?: string;
-	weight?: string;
-}
-
-/** https://discord.com/developers/docs/resources/channel#embed-object-embed-provider-structure */
-export interface APIEmbedProviderData {
-	name?: string;
-	url?: string;
+	footer?: APIEmbedFooterData;
+	timestamp?: string;
 }
 
 /** https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure */
@@ -828,6 +806,16 @@ export declare const enum APIStcikerFormatType {
 	APNG = 2,
 	LOTTIE = 3,
 	GIF = 4
+}
+
+/** https://discord.com/developers/docs/resources/channel#embed-object-embed-types */
+export declare const enum APIEmbedType {
+	RICH = "rich",
+	IMAGE = "image",
+	VIDEO = "video",
+	GIFV = "gifv",
+	ARTICLE = "article",
+	LINK = "link"
 }
 
 /** https://discord.com/developers/docs/reference#locales */
