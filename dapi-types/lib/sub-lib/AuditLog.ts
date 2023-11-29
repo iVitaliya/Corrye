@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { APIAuditLogEvent, Snowflake } from "../DAPITypes.ts";
+import { APIAuditLogEvent, Snowflake } from "../DiscordAPITypes.ts";
 
 /** https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object */
 export interface APIAuditLogEntryData {

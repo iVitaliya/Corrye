@@ -2,7 +2,7 @@ import {
   APIAutoModerationRuleActionType,
   APIAutoModerationRuleKeywordPreset,
   Snowflake,
-} from "../DAPITypes.ts";
+} from "../DiscordAPITypes.ts";
 
 /** https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-metadata */
 export interface APIAutoModerationRuleMetadataData {
