@@ -1,4 +1,4 @@
-import { Snowflake } from "../DAPITypes.ts";
+import { Snowflake } from "../DiscordAPITypes.ts";
 
 /** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-timestamps */
 export interface APIActivityDataTimestamp {

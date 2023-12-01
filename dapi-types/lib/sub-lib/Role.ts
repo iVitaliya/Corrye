@@ -1,4 +1,4 @@
-import { Snowflake } from "../DAPITypes.ts";
+import { Snowflake } from "../DiscordAPITypes.ts";
 
 export interface APIRoleTags {
 	bot_id?: Snowflake;

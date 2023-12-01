@@ -1,4 +1,4 @@
-import { Snowflake } from "../DAPITypes.ts";
+import { Snowflake } from "../DiscordAPITypes.ts";
 
 /** https://discord.com/developers/docs/resources/guild#welcome-screen-object-welcome-screen-channel-structure */
 export interface APIWelcomeScreenChannelData {
