@@ -33,18 +33,19 @@ type Timestamp = string | number | bigint | RegExp | typeof RegExp;
 export interface APIUserData {
 	id: Snowflake;
 	username: string;
-	discriminator?: string | null;
+	discriminator: string;
 	global_name: string | null;
 	avatar: string | null;
 	bot?: boolean;
 	system?: boolean;
 	mfa_enabled?: boolean;
 	banner?: string | null;
-	accent_color?: number;
+	accent_color?: number | null;
 	locale?: string;
 	verified?: boolean;
 	email?: string | null;
-	flags?: Integer;
+	/** Uses the enum: {@link APIUserFlags} */
+	flags?: number;
 	premium_type?: number;
 	public_flags?: Integer;
 	avatar_decoration?: string | null;
@@ -616,8 +617,26 @@ export type APIGuildFeatures =
 	| "VIP_REGIONS"
 	| "WELCOME_SCREEN_ENABLED";
 
+/** https://discord.com/developers/docs/resources/user#user-object-user-flags */
+export declare const enum APIUserFlags {
+	STAFF = 1 << 0,
+	PARTNER = 1 << 1,
+	HYPESQUAD = 1 << 2,
+	BUG_HUNTER_LEVEL_1 = 1 << 3,
+	HYPESQUAD_ONLINE_HOUSE_1 = 1 << 6,
+	HYPESQUAD_ONLINE_HOUSE_2 = 1 << 7,
+	HYPESQUAD_ONLINE_HOUSE_3 = 1 << 8,
+	PREMIUM_EARLY_SUPPORTER = 1 << 9,
+	TEAM_PSEUDO_USER = 1 << 10,
+	BUG_HUNTER_LEVEL_2 = 1 << 14,
+	VERIFIED_BOT = 1 << 16,
+	VERIFIED_DEVELOPER = 1 << 17,
+	CERTIFIED_MODERATOR = 1 << 18,
+	BOT_HTTP_INTERACTIONS = 1 << 19,
+	ACTIVE_DEVELOPER = 1 << 22
+}
 /** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types */
-export declare const enum ActivityType {
+export declare const enum APIActivityType {
 	/**
 	 * Playing {name}
 	 * - "Playing Rocket League" */
@@ -644,7 +663,7 @@ export declare const enum ActivityType {
 }
 
 /** https://discord.com/developers/docs/topics/gateway#activity-object-activity-flags */
-export declare const enum ActivityFlags {
+export declare const enum APIActivityFlags {
 	INSTANCE = 1 << 0,
 	JOIN = 1 << 1,
 	SPECTATE = 1 << 2,
