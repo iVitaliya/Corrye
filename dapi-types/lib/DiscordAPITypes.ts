@@ -53,6 +53,7 @@ export interface APIUserData {
   verified?: boolean;
   email?: string | null;
   flags?: Integer;
+  /** Uses the enum: {@link APIUserPremiumTypes} */
   premium_type?: number;
   public_flags?: Integer;
   avatar_decoration?: string | null;
@@ -789,6 +790,19 @@ export declare const enum ActivityFlags {
   PARTY_PRIVACY_FRIENDS = 1 << 6,
   PARTY_PRIVACY_VOICE_CHANNEL = 1 << 7,
   EMBEDDED = 1 << 8,
+}
+
+/** https://discord.com/developers/docs/resources/user#user-object-premium-types */
+export declare const enum APIUserPremiumTypes {
+  NONE = 0,
+  NITRO_CLASSIC = 1,
+  NITRO = 2,
+  NITRO_BASIC = 3,
+}
+
+/** https://discord.com/developers/docs/resources/user#user-object-user-flags */
+export declare const enum APIUserFlags {
+  STAFF = 1 << 0,
 }
 
 /** https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-flags */
