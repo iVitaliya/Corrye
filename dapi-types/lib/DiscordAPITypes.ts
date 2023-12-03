@@ -110,6 +110,27 @@ export interface APIActivityData {
   buttons?: APIActivityButtons[];
 }
 
+/**
+ * https://discord.com/developers/docs/topics/gateway#presence-update
+ *
+ * The user object within this event can be partial, the only field which must be sent is the **id** field, everything else is optional.
+ *
+ * Along with this limitation, no fields are required, and the types of the fields are not validated.
+ */
+export interface APIPresenceUpdateData {
+  user: {
+    id: string;
+  } & Partial<APIUserData>;
+  roles?: string[];
+  game?: APIActivityData | null;
+  guild_id?: string;
+  status?: APIPresenceUpdateStatusData;
+  activities?: APIActivityData[];
+  client_status?: APIClientStatusData;
+  premium_since?: string | null;
+  nick?: string | null;
+}
+
 /** https://discord.com/developers/docs/resources/audit-log#audit-log-object */
 export interface APIAuditLogData {
   application_commands: APIApplicationCommandData[];
@@ -527,7 +548,7 @@ export interface APIGuildVanityData {
 export interface APIInviteData {
   code: string;
   guild?: APIGuildData;
-  channel: APIChannelData | null;
+  channel: Partial<APIChannelData> | null;
   inviter?: APIUserData;
   /** Uses the enum: {@link APIInviteTargetType} */
   target_type?: number;
@@ -752,6 +773,11 @@ export type APIGuildFeatures =
   | "VIP_REGIONS"
   | "WELCOME_SCREEN_ENABLED";
 
+/** https://discord.com/developers/docs/topics/gateway#client-status-object */
+export declare type APIClientStatusData = Partial<
+  Record<"desktop" | "mobile" | "web", APIPresenceUpdateStatusData>
+>;
+
 /** https://discord.com/developers/docs/topics/gateway-events#activity-object-activity-types */
 export declare const enum ActivityType {
   /**
@@ -811,6 +837,13 @@ export declare const enum APIGuildMemberFlags {
   COMPLETED_ONBOARDING = 1 << 1,
   BYPASSES_VERIFICATION = 1 << 2,
   STARTED_ONBOARDING = 1 << 3,
+}
+
+export declare const enum APIPresenceUpdateStatusData {
+  Idle = "idle",
+  DnD = "dnd",
+  Online = "online",
+  Offline = "offline",
 }
 
 /** https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types */
