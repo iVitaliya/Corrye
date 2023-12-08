@@ -11,7 +11,7 @@ import type {
 	APIPresenceUpdateData,
 	APIRoleData,
 	APIUserData,
-	APIVoiceStateData,
+	APIVoiceState,
 	Snowflake
 } from "../../../dapi-types/lib/DiscordAPITypes.ts";
 import type { WSOptions } from "../lib/WebSocketShard.ts";
@@ -129,6 +129,17 @@ export interface HelloPayload extends BasePayload {
 	};
 }
 
+export type ReactionData<E extends WebSocketEvents, O extends string = never> = DataPayload<E, Omit<{
+	user_id: Snowflake;
+	channel_id: Snowflake;
+	message_id: Snowflake;
+	guild_id?: Snowflake;
+	member?: APIGuildMemberData;
+	emoji: APIEmojiPartial;
+}, O>>;
+
+
+
 export interface Heartbeat extends BasePayload {
 	op: OpCodes.HEARTBEAT;
 	t: never;
@@ -169,12 +180,12 @@ export declare type ReadyDispatch = DataPayload<WebSocketEvents.Ready, {
 }>;
 
 /** https://discord.com/developers/docs/topics/gateway#resumed */
-export declare type ResumeDispatch = DataPayload<WebSocketEvents.Resumed, never>;
+export declare type ResumedDispatch = DataPayload<WebSocketEvents.Resumed, never>;
 
 /**
- * https://discord.com/developers/docs/topics/gateway#channel-create
- * https://discord.com/developers/docs/topics/gateway#channel-update
- * https://discord.com/developers/docs/topics/gateway#channel-delete */
+	* https://discord.com/developers/docs/topics/gateway#channel-create
+	* https://discord.com/developers/docs/topics/gateway#channel-update
+	* https://discord.com/developers/docs/topics/gateway#channel-delete */
 export declare type ChannelCreateDispatch = DataPayload<WebSocketEvents.ChannelCreate | WebSocketEvents.ChannelUpdate | WebSocketEvents.ChannelDelete, APIChannelData>;
 
 /** https://discord.com/developers/docs/topics/gateway#channel-pins-update */
@@ -185,16 +196,16 @@ export declare type ChannelPinsUpdateDispatch = DataPayload<WebSocketEvents.Chan
 }>;
 
 /**
- * https://discord.com/developers/docs/topics/gateway#guild-create
- * https://discord.com/developers/docs/topics/gateway#guild-update */
+	* https://discord.com/developers/docs/topics/gateway#guild-create
+	* https://discord.com/developers/docs/topics/gateway#guild-update */
 export declare type GuildCreateDispatch = DataPayload<WebSocketEvents.GuildCreate | WebSocketEvents.GuildUpdate, APIGuildData>;
 
 /** https://discord.com/developers/docs/topics/gateway#guild-delete */
 export declare type GuildDeleteDispatch = DataPayload<WebSocketEvents.GuildDelete, APIGuildUnavailableData>;
 
 /**
- * https://discord.com/developers/docs/topics/gateway#guild-ban-add
- * https://discord.com/developers/docs/topics/gateway#guild-ban-remove */
+	* https://discord.com/developers/docs/topics/gateway#guild-ban-add
+	* https://discord.com/developers/docs/topics/gateway#guild-ban-remove */
 export declare type GuildBanAddDispatch = DataPayload<WebSocketEvents.GuildBanAdd | WebSocketEvents.GuildBanRemove, {
 	guild_id: Snowflake;
 	user: APIUserData;
@@ -239,4 +250,252 @@ export declare type GuildMembersChunkDispatch = DataPayload<WebSocketEvents.Guil
 	chunk_count?: number;
 	not_found?: unknown[];
 	presences?: APIPresenceUpdateData[];
+	nonce?: string;
 }>;
+
+/**
+	* https://discord.com/developers/docs/topics/gateway#guild-role-create
+	* https://discord.com/developers/docs/topics/gateway#guild-role-update */
+export declare type GuildRoleCreateDispatch = DataPayload<WebSocketEvents.GuildRoleCreate | WebSocketEvents.GuildRoleUpdate, {
+	guild_id: Snowflake;
+	role_id: APIRoleData;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#guild-role-delete */
+export declare type GuildRoleDeleteDispatch = DataPayload<WebSocketEvents.GuildRoleDelete, {
+	guild_id: Snowflake;
+	role_id: Snowflake;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#invite-create */
+export declare type InviteCreateDispatch = DataPayload<WebSocketEvents.InviteCreate, {
+	channel_id: Snowflake;
+	code: string;
+	created_at: string;
+	guild_id?: Snowflake;
+	inviter?: APIUserData;
+	max_age: number;
+	max_uses: number;
+	target_user?: APIUserData;
+	target_user_type?: APIInviteTargetType;
+	temporary: boolean;
+	uses: 0;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#invite-delete */
+export declare type InviteDeleteDispatch = DataPayload<WebSocketEvents.InviteDelete, {
+	channel_id: Snowflake;
+	guild_id?: Snowflake;
+	code: string;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#message-create */
+export declare type MessageCreateDispatch = DataPayload<WebSocketEvents.MessageCreate, APIMessageData>;
+
+/** https://discord.com/developers/docs/topics/gateway#message-update */
+export declare type MessageUpdateDispatch = DataPayload<WebSocketEvents.MessageUpdate, {
+	id: Snowflake;
+	channel_id: Snowflake;
+} & Partial<APIMessageData>>;
+
+/** https://discord.com/developers/docs/topics/gateway#message-delete */
+export declare type MessageDeleteDispatch = DataPayload<WebSocketEvents.MessageDelete, {
+	id: Snowflake;
+	channel_id: Snowflake;
+	guild_id?: Snowflake;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#message-delete-bulk */
+export declare type MessageDeleteBulkDispatch = DataPayload<WebSocketEvents.MessageDeleteBulk, {
+	ids: Snowflake[];
+	channel_id: Snowflake;
+	guild_id?: Snowflake;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#message-reaction-add */
+export declare type MessageReactionAddDispatch = ReactionData<WebSocketEvents.MessageReactionAdd>;
+
+/** https://discord.com/developers/docs/topics/gateway#message-reaction-remove */
+export declare type MessageReactionRemoveDispatch = ReactionData<WebSocketEvents.MessageReactionRemove, "member">;
+
+/** https://discord.com/developers/docs/topics/gateway#message-reaction-remove-all */
+export declare type MessageReactionRemoveAllDispatch = DataPayload<WebSocketEvents.MessageReactionRemoveAll, MessageReactionRemoveData>;
+
+/** https://discord.com/developers/docs/topics/gateway#message-reaction-remove-emoji */
+export declare type MessageReactionRemoveEmojiDispatch = DataPayload<WebSocketEvents.MessageReactionRemoveEmoji, MessageReactionRemoveData & {
+	emoji: APIEmojiPartial;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#presence-update */
+export declare type PresenceUpdateDispatch = DataPayload<WebSocketEvents.PresenceUpdate, APIPresenceUpdateData>;
+
+/** https://discord.com/developers/docs/topics/gateway#typing-start */
+export declare type TypingStartDispatch = DataPayload<WebSocketEvents.TypingStart, {
+	channel_id: Snowflake;
+	guild_id?: Snowflake;
+	user_id: Snowflake;
+	timestamp: number;
+	member?: APIGuildMemberData;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#user-update */
+export declare type UserUpdateDispatch = DataPayload<WebSocketEvents.UserUpdate, APIUserData>;
+
+/** https://discord.com/developers/docs/topics/gateway#voice-state-update */
+export declare type VoiceStateUpdateDispatch = DataPayload<WebSocketEvents.VoiceStateUpdate, APIVoiceState>;
+
+/** https://discord.com/developers/docs/topics/gateway#voice-server-update */
+export declare type VoiceServerUpdateDispatch = DataPayload<WebSocketEvents.VoiceServerUpdate, {
+	token: string;
+	guild_id: Snowflake;
+	endpoint: string;
+}>;
+
+/** https://discord.com/developers/docs/topics/gateway#webhooks-update */
+export declare type WebhooksUpdateDispatch = DataPayload<WebSocketEvents.WebhooksUpdate, {
+	guild_id: Snowflake;
+	channel_id: Snowflake;
+}>;
+
+export declare type DispatchPayload = ReadyDispatch | ResumedDispatch | ChannelCreateDispatch | ChannelPinsUpdateDispatch | GuildCreateDispatch | GuildDeleteDispatch | GuildBanAddDispatch | GuildEmojisUpdateDispatch | GuildIntegrationsUpdateDispatch | GuildMemberAddDispatch | GuildMemberRemoveDispatch | GuildMemberUpdateDispatch | GuildMembersChunkDispatch | GuildRoleCreateDispatch | GuildRoleDeleteDispatch | InviteCreateDispatch | InviteDeleteDispatch | MessageCreateDispatch | MessageUpdateDispatch | MessageDeleteDispatch | MessageDeleteBulkDispatch | MessageReactionAddDispatch | MessageReactionRemoveDispatch | MessageReactionRemoveAllDispatch | MessageReactionRemoveEmojiDispatch | PresenceUpdateDispatch | TypingStartDispatch | UserUpdateDispatch | VoiceStateUpdateDispatch | VoiceServerUpdateDispatch | WebhooksUpdateDispatch;
+
+export interface WSHeartbeat {
+	op: OpCodes.HEARTBEAT;
+	d: number;
+}
+
+export interface Identify {
+	op: OpCodes.IDENTIFY;
+	d: {
+		token: string;
+		properties: {
+			$os: string;
+			$browser: string;
+			device: string;
+		};
+		large_threshold?: number;
+		shard?: [number, number];
+		presence?: APIPresenceUpdateData;
+		intents?: number;
+	};
+}
+
+export interface Resume {
+	op: OpCodes.RESUME;
+	d: {
+		token: string;
+		session_id: Snowflake;
+		seq: number;
+	};
+}
+
+export interface RequestGuildMembers {
+	op: OpCodes.REQUEST_GUILD_MEMBERS;
+	d: {
+		guild_id: Snowflake | Snowflake[];
+		query?: string;
+		limit: number;
+		presences?: boolean;
+		user_ids?: Snowflake | Snowflake[];
+		nonce?: string;
+	};
+}
+
+export interface VoiceStateUpdate {
+	op: OpCodes.VOICE_STATE_UPDATE;
+	d: {
+		guild_id: Snowflake;
+		channel_id: Snowflake | null;
+		self_mute: boolean;
+		self_deaf: boolean;
+	};
+}
+
+export interface PresenceUpdate {
+	op: OpCodes.STATUS_UPDATE;
+	d: APIPresenceUpdateData;
+}
+
+export interface MessageReactionRemoveData {
+	channel_id: Snowflake;
+	message_id: Snowflake;
+	guild_id?: Snowflake;
+}
+
+export interface PresenceUpdateData {
+	since: number | null;
+	game: APIActivityData | null;
+	status: "online" | "dnd" | "idle" | "invisible" | "offline";
+	afk: boolean;
+}
+
+export interface WSIdentify {
+	properties: {
+		$os: string;
+		$browser: string;
+		device: string;
+	};
+	large_threshold?: number;
+	shard?: [number, number];
+	presence?: PresenceUpdateData;
+	intents?: number;
+}
+
+export interface SessionDetails {
+	session_id: Snowflake;
+	seq: number;
+}
+
+export declare type WorkerMasterMessages = {
+	type: InternalActions.Debug;
+	data: string;
+} | {
+	type: InternalActions.Dispatch;
+	data: DispatchPayload;
+} | {
+	type: InternalActions.Identify | InternalActions.ScheduleIdentify;
+} | {
+	type: InternalActions.UpdatePing;
+	data: number;
+} | {
+	type: InternalActions.GatewayStatus;
+	data: GatewayStatus;
+} | {
+	type: InternalActions.CannotReconnect;
+	data: {
+		code: number;
+		reason: string;
+	};
+} | {
+	type: InternalActions.ConnectionStatusUpdate;
+	data: WebSocketShardStatus;
+} | {
+	type: InternalActions.PayloadDispatch;
+	data: SendPayload;
+} | {
+	type: InternalActions.FetchSessionData;
+	data: SessionDetails;
+};
+
+export declare type MasterWorkerMessages = {
+	type: InternalActions.Identify | InternalActions.Destroy | InternalActions.Reconnect | InternalActions.FetchSessionData;
+} | {
+	type: InternalActions.PayloadDispatch;
+	data: SendPayload;
+};
+
+export interface WSWorkerData {
+	gatewayURL: string;
+	gatewayVersion: number;
+	token: string;
+	options: Required<WSOptions> & {
+		shard: [number, number];
+	};
+}
+
+export declare const enum GatewayStatus {
+	Ready = 0,
+	InvalidSession = 1
+}
+
+export {};

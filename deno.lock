@@ -5,7 +5,9 @@
       "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:events": "npm:events@3.3.0",
       "npm:util": "npm:util@0.12.5",
-      "npm:utils": "npm:utils@0.3.1"
+      "npm:utils": "npm:utils@0.3.1",
+      "npm:ws": "npm:ws@8.14.2",
+      "npm:zlib-sync": "npm:zlib-sync@0.1.9"
     },
     "npm": {
       "@types/node@18.16.19": {
@@ -267,6 +269,10 @@
           "kind-of": "kind-of@6.0.3"
         }
       },
+      "nan@2.18.0": {
+        "integrity": "sha512-W7tfG7vMOGtD30sHoZSSc/JVYiyDPEyQVso/Zz+/uQd0B0L46gtC+pHha5FFMRpil6fm/AoEcRWyOVi4+E/f8w==",
+        "dependencies": {}
+      },
       "object.defaults@0.3.0": {
         "integrity": "sha512-VOrsFahJiyB6ajWr5z0C8+mFY47WtWn2w5VFkJHjluy28fg22m2yFZDxu3EmKtf4x38GHFjvmRtPx0aQgTTmQg==",
         "dependencies": {
@@ -379,6 +385,16 @@
       "word-wrap@1.2.5": {
         "integrity": "sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==",
         "dependencies": {}
+      },
+      "ws@8.14.2": {
+        "integrity": "sha512-wEBG1ftX4jcglPxgFCMJmZ2PLtSbJ2Peg6TmpJFTbe9GZYOQCDPdMYu/Tm0/bGZkw8paZnJY45J4K2PZrLYq8g==",
+        "dependencies": {}
+      },
+      "zlib-sync@0.1.9": {
+        "integrity": "sha512-DinB43xCjVwIBDpaIvQqHbmDsnYnSt6HJ/yiB2MZQGTqgPcwBSZqLkimXwK8BvdjQ/MaZysb5uEenImncqvCqQ==",
+        "dependencies": {
+          "nan": "nan@2.18.0"
+        }
       }
     }
   },
